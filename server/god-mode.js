@@ -33,20 +33,20 @@ module.exports = {
         }
 
         function onHello(name) {
-            this.get('board', function(err, board) {
-                         addUser(findBoard(board), name);
-                         boardcastActiveBoards();
-                     });
+            // this.get('board', function(err, board) {
+            //              addUser(findBoard(board), name);
+            //              boardcastActiveBoards();
+            //          });
         }
         
         function onBye() {
             var s = this;
-            s.get('name', function(err, u) {
-                      s.get('board', function(err, b) {
-                                removeUser(findBoard(b), u);
-                                boardcastActiveBoards();
-                            });
-                  });
+            // s.get('name', function(err, u) {
+            //           s.get('board', function(err, b) {
+            //                     removeUser(findBoard(b), u);
+            //                     boardcastActiveBoards();
+            //                 });
+            //       });
         }
 
         io.sockets.on('connection', 

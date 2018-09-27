@@ -8,7 +8,8 @@ define(function () {
 	/*constructor*/
 	function Comm(url) {
 		// create socket connection object
-		this.socket = io.connect(url);
+		//this.socket = io.connect(url);
+		this.socket = io();
 		// variable to hold reference of this object(Comm)
 		var objRef = this;
 		// Invoked when containerDraw method called on the server side

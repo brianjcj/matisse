@@ -14,7 +14,9 @@ var renderDashboard = function(res, ownedBoards, sharedBoards) {
         sharedNum: 0, 
         ownedBoards:  [], 
         sharedBoards: []  
-    }, actualValues = {};
+    }, actualValues = {
+		everyauth : {loggedIn: true},
+	};
 
     actualValues['title'] = defaults.title;
     actualValues['ownedBoards'] = (ownedBoards)? ownedBoards: defaults.ownedBoards;
@@ -68,6 +70,13 @@ var MatisseServer = new function() {
     });
 
     server.on('valid user', function(req, res, userID) {
+        renderDashboard(res);
+		return;
+
+		var boardIds = [];
+        server.emit('valid owned boards', req, res, loggedInUser, boardIds);
+		return;
+
         var loggedInUser = new UserModel();
 
         loggedInUser.find({userID:userID}, function(err,ids) {
@@ -119,7 +128,14 @@ var MatisseServer = new function() {
     });
 
     server.render = function(req, res) {
-        var session_data = req.session.auth;
+        console.log('jcj here');
+        renderDashboard(res);
+		return;
+
+        server.emit('valid session', res);
+        return;
+
+        var session_data = 'todo'; // = req.session.auth;
         if (session_data) {
             server.emit('valid session', req, res, session_data);
         } else {
@@ -148,15 +164,17 @@ exports.boards = {
 	    var chars = "0123456789abcdefghiklmnopqrstuvwxyz";
         var string_length = 8;
         randomstring = '';
-		var session_data = req.session.auth;
+		//var session_data = req.session.auth;
 		var userObj = new UserModel();
-		var userID = userObj.getUserID(session_data);
-		var userName = userObj.getUserFromSession(session_data).name;
+		var userID = "brianjcj"; // userObj.getUserID(session_data);
+		var userName = "brian jcj"; // userObj.getUserFromSession(session_data).name;
 		
         for (var i = 0; i < string_length; i++) {
             var rnum = Math.floor(Math.random() * chars.length);
             randomstring += chars.substring(rnum, rnum + 1);
         }
+
+        console.log('whiteboard name: ' + req.body.whiteboardName);
         var data = {
             url:randomstring,
 	        container: req.body.container,
@@ -185,7 +203,7 @@ exports.boards = {
 	
 	remove:function (req, res, next) {
 		var boardUrl = req.body.boardUrl;
-		var session_data = req.session.auth;
+		var session_data = "";// req.session.auth;
 		var userObj = new UserModel();
 		var userID = userObj.getUserID(session_data);
 		// remove shapes from the board
@@ -306,10 +324,12 @@ exports.api = {
 };
 
 exports.userinfo = function (req, res) {
-    var status = req.session.auth ? 200 : 403;
-    var userinfo = req.session.auth
-        ? JSON.stringify(new UserModel().getUserFromSession(req.session.auth))
-        : "{}";
+    //var status = req.session.auth ? 200 : 403;
+    // var userinfo = req.session.auth
+    //     ? JSON.stringify(new UserModel().getUserFromSession(req.session.auth))
+    //     : "{}";
+	var status = 200;
+	var userinfo = '{}';
 
     res.writeHead(status, {"Content-Type": "application/json"});
     res.write(userinfo);
